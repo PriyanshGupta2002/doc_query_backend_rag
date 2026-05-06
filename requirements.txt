@@ -21,3 +21,5 @@ pymupdf
 sentence-transformers
 chromadb
 uuid
+celery
+redis

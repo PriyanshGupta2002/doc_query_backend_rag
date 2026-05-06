@@ -13,3 +13,5 @@ class Document(Base):
     status = Column(String(50), default="processing")
 
     created_at = Column(DateTime, default=datetime.now)
+    
+    progress = Column(Integer, default=0)

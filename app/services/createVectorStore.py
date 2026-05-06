@@ -41,7 +41,7 @@ def create_vector_store(
         metadata["content_length"] = len(doc.page_content)
 
         metadatas.append(metadata)
-        vectors.append(embedding.tolist())
+        vectors.append(embedding)
 
     collection.add(
         ids=ids,
@@ -49,5 +49,3 @@ def create_vector_store(
         documents=documents,
         metadatas=metadatas
     )
-
-    print(f"Stored {len(ids)} chunks in vector DB")
