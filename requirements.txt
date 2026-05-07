@@ -26,4 +26,4 @@ redis
 black
 flower
 langchain-openai
-psycog2
+psycopg2-binary
