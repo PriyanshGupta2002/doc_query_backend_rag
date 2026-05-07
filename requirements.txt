@@ -25,3 +25,5 @@ celery
 redis
 black
 flower
+langchain-openai
+psycog2

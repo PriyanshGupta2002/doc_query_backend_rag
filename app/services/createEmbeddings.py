@@ -9,12 +9,9 @@ def embed_documents(texts: List[str]):
         texts,
         batch_size=32,
         show_progress_bar=True,
-        normalize_embeddings=True  # 🔥 important for cosine similarity
+        normalize_embeddings=True,  # 🔥 important for cosine similarity
     )
 
 
 def embed_query(query: str):
-    return _model.encode(
-        query,
-        normalize_embeddings=True
-    )
+    return _model.encode(query, normalize_embeddings=True)
