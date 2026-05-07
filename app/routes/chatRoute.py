@@ -6,6 +6,7 @@ from app.services.search import search
 from app.db.session import SessionLocal
 from app.models.conversationModel import Conversation
 from app.core.dependencies import get_current_user
+from app.schemas.responseSchema import responseModel
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
@@ -18,17 +19,21 @@ def get_db():
         db.close()
 
 
-@router.post("/")
+@router.post("/", response_model=responseModel)
 def chat(
     payload: ChatCreate,
     db: Session = Depends(get_db),
-    user_id: int = Depends(get_current_user)  # 🔐 protect route
+    user_id: int = Depends(get_current_user),  # 🔐 protect route
 ):
     # 🔥 1. fetch conversation
-    conversation = db.query(Conversation).filter(
-        Conversation.id == payload.conversation_id,
-        Conversation.user_id == user_id   # 🔥 ownership check
-    ).first()
+    conversation = (
+        db.query(Conversation)
+        .filter(
+            Conversation.id == payload.conversation_id,
+            Conversation.user_id == user_id,  # 🔥 ownership check
+        )
+        .first()
+    )
 
     if not conversation:
         raise HTTPException(status_code=404, detail="Conversation not found")
@@ -37,24 +42,23 @@ def chat(
     doc_id = conversation.doc_id
 
     # 🔥 3. generate answer
-    answer = search(
-        doc_id=doc_id,
-        query=payload.query
-    )
+    answer = search(doc_id=doc_id, query=payload.query)
 
     # 🔥 4. save chat
     chat = save_chat(
         db=db,
         conversation_id=payload.conversation_id,
         query=payload.query,
-        answer=answer
+        answer=answer,
     )
 
-    return {
-        "message": "Chat saved",
-        "success": True,
-        "data": {
+    return responseModel(
+        data={
             "query": chat.query,
-            "answer": chat.answer
-        }
-    }
+            "answer": chat.answer,
+            "id": chat.id,
+            "created_at": chat.created_at,
+        },
+        message="Chat created successfully",
+        success=True,
+    )

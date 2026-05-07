@@ -8,6 +8,7 @@ from app.services.documentService import create_document
 from app.tasks.document_tasks import process_document_pipeline
 from app.core.dependencies import get_current_user
 from app.services.getDocumentStatusService import getDocumentStatus
+from app.schemas.responseSchema import responseModel
 
 router = APIRouter(prefix="/documents", tags=["Documents"])
 
@@ -24,7 +25,7 @@ def get_db():
         db.close()
 
 
-@router.post("/upload")
+@router.post("/upload", response_model=responseModel)
 def upload_document(
     payload: DocumentCreate,
     db: Session = Depends(get_db),
@@ -33,11 +34,11 @@ def upload_document(
     doc = create_document(db, payload.doc_url, user_id)
     process_document_pipeline(doc_id=doc.id)
 
-    return {
-        "message": "Document uploaded successfully",
-        "success": True,
-        "data": {"id": doc.id, "status": doc.status},
-    }
+    return responseModel(
+        message="Document uploaded successfully",
+        success=True,
+        data={"id": doc.id, "status": doc.status},
+    )
 
 
 @router.get("/{doc_id}/status")
@@ -47,4 +48,9 @@ def get_document_status(
     user_id=Depends(get_current_user),
 ):
     status = getDocumentStatus(docId=doc_id, db=db, user_id=user_id)
-    return {"status": status}
+
+    return responseModel(
+        message="Document status fetched successfully",
+        success=True,
+        data={"status": status},
+    )
