@@ -32,7 +32,8 @@ def login(user: UserLogin,response:Response, db: Session = Depends(get_db)):
         key="accessToken",
         value=token,
         httponly=True,
-        samesite="lax"
+        samesite="lax",
+        secure=False
     )
     return responseModel(
         message="Login successful",
