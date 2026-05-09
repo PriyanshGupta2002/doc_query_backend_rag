@@ -17,6 +17,7 @@ passlib[argon2]
 langchain
 langchain-core
 langchain-community
+langchain-groq
 pymupdf
 sentence-transformers
 chromadb
