@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.schemas.chatSchema import ChatCreate
-from app.services.chatService import save_chat
+from app.schemas.chatSchema import ChatCreate,ChatApiResponse
+from app.services.chatService import save_chat,fetch_chat
 from app.services.search import search
 from app.db.session import SessionLocal
 from app.models.conversationModel import Conversation
@@ -61,4 +61,21 @@ def chat(
         },
         message="Chat created successfully",
         success=True,
+    )
+
+@router.get(
+    "/{conversation_id}",
+    response_model=ChatApiResponse
+)
+def get_chats(
+    conversation_id: int,
+    page: int = 1,
+    limit: int = 20,
+    db: Session = Depends(get_db)
+):
+    return fetch_chat(
+        db=db,
+        conversation_id=conversation_id,
+        page=page,
+        limit=limit
     )

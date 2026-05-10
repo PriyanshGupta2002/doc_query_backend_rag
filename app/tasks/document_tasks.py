@@ -95,7 +95,7 @@ def set_vector_store_task(data):
     ]
     
     create_vector_store(doc_id=docId,document_chunks=chunks,embeddings=embeddings)
-    updateDocumentStatus(docId=docId,status="Vectors stored successfully.",progress=100)
+    updateDocumentStatus(docId=docId,status="completed",progress=100)
     return True
     
 

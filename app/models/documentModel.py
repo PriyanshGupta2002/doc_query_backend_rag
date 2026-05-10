@@ -15,3 +15,5 @@ class Document(Base):
     created_at = Column(DateTime, default=datetime.now)
     
     progress = Column(Integer, default=0)
+
+    name = Column(String(16))

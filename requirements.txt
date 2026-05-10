@@ -28,3 +28,4 @@ black
 flower
 langchain-openai
 psycopg2-binary
+alembic
