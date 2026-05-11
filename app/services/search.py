@@ -2,6 +2,8 @@ from app.services.retreival import retrieve_documents
 from langchain_groq import ChatGroq
 from app.core.config import GROQ_API_KEY
 from app.utils.responseCleaner import clean_llm_response
+from langchain_core.prompts import PromptTemplate
+
 # 🔥 create once (not inside function)
 llm = ChatGroq(
     api_key=GROQ_API_KEY,
@@ -10,18 +12,19 @@ llm = ChatGroq(
     max_tokens=1024,
 )
 
+
 def search(doc_id: int, query: str):
     results = retrieve_documents(query=query, doc_id=doc_id)
 
     if not results:
         return "No relevant information found in the document."
 
-    context = "\n\n".join([
-        f"Document {i}:\n{doc['content']}"
-        for i, doc in enumerate(results)
-    ])
+    context = "\n\n".join(
+        [f"Document {i}:\n{doc['content']}" for i, doc in enumerate(results)]
+    )
 
-    prompt = f"""
+    template = PromptTemplate(
+        template="""
 You are a helpful assistant.
 
 STRICT RULES:
@@ -37,8 +40,12 @@ Context:
 Question: {query}
 
 Answer:
-"""
+""",
+        input_variables=["context", "query"],
+        validate_template=True,
+    )
+    chain = template | llm
 
-    response = llm.invoke(prompt)
+    response = chain.invoke({"context": context, "query": query})
     cleaned = clean_llm_response(response.content)
     return cleaned
